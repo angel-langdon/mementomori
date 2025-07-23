@@ -1,0 +1,9 @@
+{
+  "name": "Memento Mori Countdown",
+  "description": "A seconds countdown displayed in the GNOME Shell top bar",
+  "uuid": "memento-mori-countdown@example.com",
+  "shell-version": ["40", "41", "42", "43", "44", "45", "46"],
+  "version": 2,
+  "url": "",
+  "settings-schema": "org.gnome.shell.extensions.memento-mori-countdown"
+}

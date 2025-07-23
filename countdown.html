@@ -84,8 +84,8 @@
       const CENTISECONDS_DIVISOR = 10;
 
       // Cache timestamps for better performance
-      const END_TIMESTAMP = new Date(2100, 5, 24, 0, 0, 0).getTime();
-      const REFERENCE_TIMESTAMP = new Date(2000, 5, 24, 0, 0, 0).getTime();
+      const END_TIMESTAMP = new Date(2099, 1, 1, 0, 0, 0).getTime();
+      const REFERENCE_TIMESTAMP = new Date(1999, 1, 1, 0, 0, 0).getTime();
       const TOTAL_PROJECT_MILLISECONDS = END_TIMESTAMP - REFERENCE_TIMESTAMP;
       const TOTAL_DAYS = Math.floor(
         TOTAL_PROJECT_MILLISECONDS / MILLISECONDS_PER_DAY

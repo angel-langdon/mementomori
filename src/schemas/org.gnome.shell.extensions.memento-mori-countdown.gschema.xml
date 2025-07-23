@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.memento-mori-countdown" path="/org/gnome/shell/extensions/memento-mori-countdown/">
+    <key name="update-interval" type="i">
+      <default>10</default>
+      <summary>Update interval in milliseconds</summary>
+      <description>How often to update the countdown display</description>
+    </key>
+    <key name="show-centiseconds" type="b">
+      <default>true</default>
+      <summary>Show centiseconds</summary>
+      <description>Whether to display centiseconds in the countdown</description>
+    </key>
+    <key name="end-date" type="s">
+      <default>"2100-06-24"</default>
+      <summary>End date</summary>
+      <description>The target date for the countdown</description>
+    </key>
+    <key name="reference-date" type="s">
+      <default>"2000-06-24"</default>
+      <summary>Reference date</summary>
+      <description>The starting date for percentage calculations</description>
+    </key>
+  </schema>
+</schemalist>
