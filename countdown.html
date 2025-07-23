@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memento Mori</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        color: black;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+        font-family: "Ubuntu Mono", monospace;
+        font-weight: 400;
+        font-style: normal;
+        padding: 0 2rem;
+      }
+
+      .countdown-container {
+        text-align: center;
+        font-size: 25px;
+        flex-direction: column;
+        gap: 3px 0px;
+        display: flex;
+        flex: 1;
+      }
+
+      .main-time {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.5px;
+        margin-bottom: 12px;
+      }
+
+      .end-message {
+        font-size: 5rem;
+      }
+
+      .percentage {
+        font-size: 9px;
+      }
+
+      .days-info {
+        font-size: 9px;
+      }
+
+      .end-date {
+        font-size: 8px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="countdown" class="countdown-container">
+      <div id="main-time" class="main-time"></div>
+      <div id="percentage" class="percentage"></div>
+      <div id="days-info" class="days-info"></div>
+      <div id="end-date" class="end-date"></div>
+    </div>
+
+    <script>
+      // Performance optimizations applied:
+      // 1. Pre-calculated constants
+      // 2. Cached timestamps instead of Date objects
+      // 3. Pre-selected DOM elements
+      // 4. Minimized function calls and object creation
+      // 5. Optimized mathematical operations
+
+      const MILLISECONDS_PER_DAY = 86400000; // 24 * 60 * 60 * 1000
+      const MILLISECONDS_PER_SECOND = 1000;
+      const CENTISECONDS_DIVISOR = 10;
+
+      // Cache timestamps for better performance
+      const END_TIMESTAMP = new Date(2100, 5, 24, 0, 0, 0).getTime();
+      const REFERENCE_TIMESTAMP = new Date(2000, 5, 24, 0, 0, 0).getTime();
+      const TOTAL_PROJECT_MILLISECONDS = END_TIMESTAMP - REFERENCE_TIMESTAMP;
+      const TOTAL_DAYS = Math.floor(
+        TOTAL_PROJECT_MILLISECONDS / MILLISECONDS_PER_DAY
+      );
+
+      // Cache DOM elements for performance
+      const elements = {
+        mainTime: document.getElementById("main-time"),
+        percentage: document.getElementById("percentage"),
+        daysInfo: document.getElementById("days-info"),
+        endDate: document.getElementById("end-date"),
+      };
+
+      // Pre-format end date string
+      const END_DATE_STRING = new Date(END_TIMESTAMP).toISOString();
+
+      let lastUpdateTime = 0;
+      let animationId = null;
+
+      // Optimized number formatting with caching for common values
+      const numberFormatCache = new Map();
+      function formatNumber(number) {
+        if (numberFormatCache.has(number)) {
+          return numberFormatCache.get(number);
+        }
+        const formatted = number.toLocaleString();
+        // Cache frequently used numbers to avoid repeated formatting
+        if (number < 1000000) {
+          numberFormatCache.set(number, formatted);
+        }
+        return formatted;
+      }
+
+      function updateCountdown() {
+        const currentTime = Date.now();
+
+        // Throttle updates to every 10ms for better performance
+        if (currentTime - lastUpdateTime < 10) {
+          animationId = requestAnimationFrame(updateCountdown);
+          return;
+        }
+
+        const milliseconds = END_TIMESTAMP - currentTime;
+
+        if (milliseconds < 0) {
+          elements.mainTime.className = "end-message";
+          elements.mainTime.textContent = "TIME'S UP!";
+          elements.percentage.textContent = "";
+          elements.daysInfo.textContent = "";
+          elements.endDate.textContent = END_DATE_STRING;
+          return;
+        }
+
+        // Optimized time calculations
+        const seconds = Math.floor(milliseconds / MILLISECONDS_PER_SECOND);
+        const centiseconds = Math.floor(
+          (milliseconds % MILLISECONDS_PER_SECOND) / CENTISECONDS_DIVISOR
+        );
+
+        // Format time with minimal string operations
+        elements.mainTime.textContent = `${formatNumber(seconds)}.${centiseconds
+          .toString()
+          .padStart(2, "0")}`;
+
+        // Calculate percentage with cached values
+        const passedDuration = currentTime - REFERENCE_TIMESTAMP;
+        const percentage = (passedDuration / TOTAL_PROJECT_MILLISECONDS) * 100;
+        elements.percentage.textContent = `${percentage.toFixed(
+          2
+        )}% passed of ${formatNumber(TOTAL_DAYS)} days`;
+
+        // Calculate days with optimized operations
+        const passedDays = Math.floor(passedDuration / MILLISECONDS_PER_DAY);
+        const remainingDays = Math.floor(milliseconds / MILLISECONDS_PER_DAY);
+        elements.daysInfo.textContent = `${formatNumber(
+          passedDays
+        )} lived | ${formatNumber(remainingDays)} remaining days`;
+
+        elements.endDate.textContent = END_DATE_STRING;
+
+        lastUpdateTime = currentTime;
+        animationId = requestAnimationFrame(updateCountdown);
+      }
+
+      function startCountdown() {
+        if (!animationId) {
+          updateCountdown();
+        }
+      }
+
+      function stopCountdown() {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
+      }
+
+      // Start countdown
+      startCountdown();
+
+      // Optimize for page visibility changes
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stopCountdown();
+        } else {
+          startCountdown();
+        }
+      });
+
+      // Performance monitoring (optional - remove in production)
+      if (typeof performance !== "undefined" && performance.mark) {
+        let frameCount = 0;
+        let startTime = performance.now();
+
+        function logPerformance() {
+          frameCount++;
+          if (frameCount % 100 === 0) {
+            const currentTime = performance.now();
+            const fps = 100 / ((currentTime - startTime) / 1000);
+            console.log(`Average FPS: ${fps.toFixed(2)}`);
+            startTime = currentTime;
+          }
+        }
+
+        // setInterval(logPerformance, 16); // ~60fps
+      }
+    </script>
+  </body>
+</html>
