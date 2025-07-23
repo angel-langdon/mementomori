@@ -1,6 +1,5 @@
 import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
-import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
 import { Button } from "resource:///org/gnome/shell/ui/panelMenu.js";
 
 import GObject from "gi://GObject";
@@ -8,16 +7,10 @@ import St from "gi://St";
 import Clutter from "gi://Clutter";
 import GLib from "gi://GLib";
 
-const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 const MILLISECONDS_PER_SECOND = 1000;
 const CENTISECONDS_DIVISOR = 10;
 
 const END_TIMESTAMP = new Date(2099, 1, 1, 0, 0, 0).getTime();
-const REFERENCE_TIMESTAMP = new Date(1999, 1, 1, 0, 0, 0).getTime();
-const TOTAL_PROJECT_MILLISECONDS = END_TIMESTAMP - REFERENCE_TIMESTAMP;
-const TOTAL_DAYS = Math.floor(
-  TOTAL_PROJECT_MILLISECONDS / MILLISECONDS_PER_DAY
-);
 
 const CountdownIndicator = GObject.registerClass(
   class CountdownIndicator extends Button {
